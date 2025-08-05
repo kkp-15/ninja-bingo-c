@@ -42,6 +42,8 @@
     .btn-generate { background: #0288d1; color: white; }
     .btn-start { background: #43a047; color: white; }
     #controls { margin-top: 1.5rem; }
+    .link-section { margin-top: 1.5rem; font-size: 1.1rem; }
+    .link-section a { color: #0288d1; text-decoration: none; }
     #statusMsg { margin-top: 1rem; font-size: 1.5rem; color: #d32f2f; min-height: 2rem; }
     #footer { margin-top: 2rem; font-size: 0.9rem; color: #555; }
     #footer a { color: #0288d1; text-decoration: none; }
@@ -56,6 +58,12 @@
     <div id="startTime"></div>
     <div id="statusMsg"></div>
   </div>
+
+  <!-- ビンゴマシンへのリンク -->
+  <div class="link-section">
+    🎲 <a href="https://bingomachine.kkpwebninja.com" target="_blank">ビンゴマシンへ</a>
+  </div>
+
   <div id="footer">
     X <a href="https://x.com/kkp_webninja" target="_blank">@kkp_webninja</a><br>
     🏯 <a href="https://kkpwebninja.com" target="_blank">web忍者の本丸</a><br>
@@ -96,7 +104,6 @@
     }
 
     function generateCard() {
-      // 生成直後は必ずスタート待ち状態
       localStorage.removeItem('bingoStartTime');
       allowClick = false;
       startTimeDisplay.textContent = '';
@@ -146,7 +153,7 @@
 
     function restoreTimer() {
       const startTimestamp = localStorage.getItem('bingoStartTime');
-      allowClick = false; // 復元時もデフォルトは押せない
+      allowClick = false;
       if (startTimestamp) {
         const startDate = new Date(parseInt(startTimestamp));
         const elapsed = (Date.now() - startDate.getTime()) / 1000;
@@ -202,7 +209,7 @@
     }
 
     function loadState() {
-      allowClick = false; // 復元直後は押せない
+      allowClick = false;
       const saved = localStorage.getItem('bingoCard');
       if (!saved) return;
       const card = JSON.parse(saved);
