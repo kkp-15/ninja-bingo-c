@@ -1,20 +1,30 @@
-<!DOCTYPE html><html lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ビンゴカード生成｜無料で遊べるオンラインビンゴ</title>
   <meta name="description" content="無料で使えるオンラインビンゴカード生成ツール。カラフルなカードを自動生成し、リーチやビンゴを自動判定。家族や友達とスマホ・PCで楽しめます。">
-  <meta name="keywords" content="ビンゴ,オンライン,無料,カード生成,リーチ,ビンゴ判定,ゲーム,イベント,パーティー">  <!-- OGP設定 -->  <meta property="og:title" content="ビンゴカード生成｜無料で遊べるオンラインビンゴ" />
+  <meta name="keywords" content="ビンゴ,オンライン,無料,カード生成,リーチ,ビンゴ判定,ゲーム,イベント,パーティー">
+
+  <!-- OGP設定 -->
+  <meta property="og:title" content="ビンゴカード生成｜無料で遊べるオンラインビンゴ" />
   <meta property="og:description" content="カラフルなビンゴカードを自動生成。リーチやビンゴを自動判定でき、イベントやパーティーで大活躍。" />
   <meta property="og:image" content="https://kkpwebninja.com/card-bingo.png" />
   <meta property="og:url" content="https://kkpwebninja.com/bingo-card" />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />  <!-- Google Analytics -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-2LM85GJN0L');
-  </script>  <style>
+  </script>
+
+  <style>
     body { font-family: sans-serif; text-align: center; margin: 0; padding: 2rem; background: #e3f2fd; }
     h1 { font-size: 2.2rem; margin-bottom: 1rem; color: #0d47a1; }
     #bingo { display: grid; grid-template-columns: repeat(5, 60px); grid-gap: 10px; justify-content: center; margin: 1rem auto; }
@@ -35,7 +45,8 @@
     #statusMsg { margin-top: 1rem; font-size: 1.5rem; color: #d32f2f; min-height: 2rem; }
     #footer { margin-top: 2rem; font-size: 0.9rem; color: #555; }
     #footer a { color: #0288d1; text-decoration: none; }
-  </style></head>
+  </style>
+</head>
 <body>
   <h1>ビンゴカード生成</h1>
   <button class="btn-generate" onclick="confirmGenerate()">生成</button>
@@ -49,25 +60,27 @@
     X <a href="https://x.com/kkp_webninja" target="_blank">@kkp_webninja</a><br>
     🏯 <a href="https://kkpwebninja.com" target="_blank">web忍者の本丸</a><br>
     各巻物（アプリ）の入り口は本丸ページに集めているでござる。
-  </div>  <script>
+  </div>
+
+  <script>
     const bingo = document.getElementById('bingo');
     const startBtn = document.getElementById('startBtn');
     const statusMsg = document.getElementById('statusMsg');
     const startTimeDisplay = document.getElementById('startTime');
-    let timer = null;
     let allowClick = false;
     const limitMinutes = 10;
 
     function confirmGenerate() {
-      if (timer) {
-        if (!confirm('タイマーが動いています。カードを再生成しますか？')) return;
+      if (localStorage.getItem('bingoStartTime')) {
+        if (!confirm('プレイ中です。カードを再生成しますか？')) return;
+        localStorage.removeItem('bingoStartTime');
       }
       generateCard();
     }
 
     function confirmStart() {
-      if (timer) {
-        if (!confirm('すでにタイマーが動いています。リセットして再スタートしますか？')) return;
+      if (localStorage.getItem('bingoStartTime')) {
+        if (!confirm('すでにプレイ中です。リセットして再スタートしますか？')) return;
       }
       startTimer();
     }
@@ -84,11 +97,6 @@
     }
 
     function generateCard() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-        allowClick = false;
-      }
       bingo.innerHTML = '';
       const card = [];
       const columns = [
@@ -125,18 +133,31 @@
     }
 
     function startTimer() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
       allowClick = true;
       const now = new Date();
-      startTimeDisplay.textContent = `スタート時刻: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+      localStorage.setItem('bingoStartTime', now.getTime());
+      startTimeDisplay.textContent = `スタート時刻: ${formatTime(now)}`;
       statusMsg.textContent = '';
-      timer = setTimeout(() => {
-        allowClick = false;
-        alert('時間切れです');
-      }, limitMinutes * 60 * 1000);
+    }
+
+    function restoreTimer() {
+      const startTimestamp = localStorage.getItem('bingoStartTime');
+      if (startTimestamp) {
+        const startDate = new Date(parseInt(startTimestamp));
+        const elapsed = (Date.now() - startDate.getTime()) / 1000;
+        if (elapsed >= limitMinutes * 60) {
+          allowClick = false;
+          localStorage.removeItem('bingoStartTime');
+          alert('時間切れです');
+        } else {
+          allowClick = true;
+          startTimeDisplay.textContent = `スタート時刻: ${formatTime(startDate)}`;
+        }
+      }
+    }
+
+    function formatTime(date) {
+      return `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}:${date.getSeconds().toString().padStart(2,'0')}`;
     }
 
     function checkBingo() {
@@ -202,6 +223,10 @@
       startBtn.disabled = false;
     }
 
-    window.onload = loadState;
-  </script></body>
+    window.onload = () => {
+      loadState();
+      restoreTimer();
+    };
+  </script>
+</body>
 </html>
