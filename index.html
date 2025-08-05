@@ -9,97 +9,32 @@
   <meta property="og:image" content="https://kkpwebninja.com/card-bingo.png" />
   <meta property="og:url" content="https://kkpwebninja.com/bingo-card" />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />  <!-- Google Analytics（いつものアナリティクス） -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
+  <meta name="twitter:card" content="summary_large_image" />  <!-- Google Analytics -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-2LM85GJN0L');
   </script>  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 2rem;
-      background: #e3f2fd;
-    }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-      color: #0d47a1;
-    }
-    #bingo {
-      display: grid;
-      grid-template-columns: repeat(5, 60px);
-      grid-gap: 10px;
-      justify-content: center;
-      margin: 1rem auto;
-    }
-    .cell {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      font-size: 1.1rem;
-      font-weight: bold;
-      line-height: 60px;
-      color: white;
-      user-select: none;
-      transition: 0.2s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+    body { font-family: sans-serif; text-align: center; margin: 0; padding: 2rem; background: #e3f2fd; }
+    h1 { font-size: 2.2rem; margin-bottom: 1rem; color: #0d47a1; }
+    #bingo { display: grid; grid-template-columns: repeat(5, 60px); grid-gap: 10px; justify-content: center; margin: 1rem auto; }
+    .cell { width: 60px; height: 60px; border-radius: 50%; font-size: 1.1rem; font-weight: bold; line-height: 60px; color: white; user-select: none; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .cell.B { background-color: #2196F3; }
     .cell.I { background-color: #F44336; }
     .cell.N { background-color: #4CAF50; }
     .cell.G { background-color: #FFEB3B; color: black; }
     .cell.O { background-color: #FF9800; }
-
-    .marked {
-      opacity: 0.3;
-      text-decoration: line-through;
-    }
-
-    .bingo-line {
-      outline: 3px solid gold;
-    }
-
-    #timer {
-      font-size: 1.3rem;
-      margin-top: 1rem;
-      color: #333;
-    }
-    button {
-      font-size: 1rem;
-      margin: 0.5rem;
-      padding: 0.7rem 1.4rem;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .marked { opacity: 0.3; text-decoration: line-through; }
+    .bingo-line { outline: 3px solid gold; }
+    #startTime { font-size: 1.1rem; margin-top: 0.5rem; color: #333; }
+    button { font-size: 1rem; margin: 0.5rem; padding: 0.7rem 1.4rem; border: none; border-radius: 8px; box-shadow: 0 3px 5px rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-generate { background: #0288d1; color: white; }
     .btn-start { background: #43a047; color: white; }
-    #controls {
-      margin-top: 1.5rem;
-    }
-    #statusMsg {
-      margin-top: 1rem;
-      font-size: 1.5rem;
-      color: #d32f2f;
-      min-height: 2rem;
-    }
-    #footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: #555;
-    }
-    #footer a {
-      color: #0288d1;
-      text-decoration: none;
-    }
+    #controls { margin-top: 1.5rem; }
+    #statusMsg { margin-top: 1rem; font-size: 1.5rem; color: #d32f2f; min-height: 2rem; }
+    #footer { margin-top: 2rem; font-size: 0.9rem; color: #555; }
+    #footer a { color: #0288d1; text-decoration: none; }
   </style></head>
 <body>
   <h1>ビンゴカード生成</h1>
@@ -107,19 +42,19 @@
   <div id="bingo"></div>
   <div id="controls">
     <button id="startBtn" class="btn-start" onclick="confirmStart()" disabled>スタート</button>
-    <div id="timer">00:00</div>
+    <div id="startTime"></div>
     <div id="statusMsg"></div>
-  </div>  <div id="footer">
+  </div>
+  <div id="footer">
     X <a href="https://x.com/kkp_webninja" target="_blank">@kkp_webninja</a><br>
     🏯 <a href="https://kkpwebninja.com" target="_blank">web忍者の本丸</a><br>
     各巻物（アプリ）の入り口は本丸ページに集めているでござる。
   </div>  <script>
     const bingo = document.getElementById('bingo');
-    const timerDisplay = document.getElementById('timer');
     const startBtn = document.getElementById('startBtn');
     const statusMsg = document.getElementById('statusMsg');
+    const startTimeDisplay = document.getElementById('startTime');
     let timer = null;
-    let seconds = 0;
     let allowClick = false;
     const limitMinutes = 10;
 
@@ -152,8 +87,6 @@
       if (timer) {
         clearInterval(timer);
         timer = null;
-        seconds = 0;
-        updateTimer();
         allowClick = false;
       }
       bingo.innerHTML = '';
@@ -165,7 +98,6 @@
         generateNumbers(46, 60, 5),
         generateNumbers(61, 75, 5),
       ];
-
       for (let row = 0; row < 5; row++) {
         for (let col = 0; col < 5; col++) {
           const value = (row === 2 && col === 2) ? 'FREE' : columns[col][row];
@@ -196,28 +128,15 @@
       if (timer) {
         clearInterval(timer);
         timer = null;
-        seconds = 0;
       }
-      seconds = 0;
-      updateTimer();
       allowClick = true;
+      const now = new Date();
+      startTimeDisplay.textContent = `スタート時刻: ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
       statusMsg.textContent = '';
-      timer = setInterval(() => {
-        seconds++;
-        updateTimer();
-        if (seconds >= limitMinutes * 60) {
-          clearInterval(timer);
-          timer = null;
-          allowClick = false;
-          alert('時間切れです');
-        }
-      }, 1000);
-    }
-
-    function updateTimer() {
-      const min = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const sec = String(seconds % 60).padStart(2, '0');
-      timerDisplay.textContent = `${min}:${sec}`;
+      timer = setTimeout(() => {
+        allowClick = false;
+        alert('時間切れです');
+      }, limitMinutes * 60 * 1000);
     }
 
     function checkBingo() {
@@ -239,7 +158,6 @@
           reachCount++;
         }
       });
-
       if (bingoCount > 0) {
         statusMsg.textContent = `🎉 BINGO! ${bingoCount}本!`;
       } else if (reachCount > 0) {
@@ -251,10 +169,7 @@
 
     function saveState(card = null) {
       if (!card) {
-        const current = Array.from(document.querySelectorAll('.cell')).map(cell => ({
-          value: cell.textContent,
-          marked: cell.classList.contains('marked')
-        }));
+        const current = Array.from(document.querySelectorAll('.cell')).map(cell => ({ value: cell.textContent, marked: cell.classList.contains('marked') }));
         localStorage.setItem('bingoCard', JSON.stringify(current));
       } else {
         localStorage.setItem('bingoCard', JSON.stringify(card));
