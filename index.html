@@ -73,7 +73,6 @@
     function confirmGenerate() {
       if (localStorage.getItem('bingoStartTime')) {
         if (!confirm('プレイ中です。カードを再生成しますか？')) return;
-        localStorage.removeItem('bingoStartTime');
       }
       generateCard();
     }
@@ -97,6 +96,11 @@
     }
 
     function generateCard() {
+      // スタート時間リセットしてスタート待ち状態へ
+      localStorage.removeItem('bingoStartTime');
+      allowClick = false;
+      startTimeDisplay.textContent = '';
+
       bingo.innerHTML = '';
       const card = [];
       const columns = [
