@@ -96,7 +96,7 @@
     }
 
     function generateCard() {
-      // スタート時間リセットしてスタート待ち状態へ
+      // 生成直後は必ずスタート待ち状態
       localStorage.removeItem('bingoStartTime');
       allowClick = false;
       startTimeDisplay.textContent = '';
@@ -146,11 +146,11 @@
 
     function restoreTimer() {
       const startTimestamp = localStorage.getItem('bingoStartTime');
+      allowClick = false; // 復元時もデフォルトは押せない
       if (startTimestamp) {
         const startDate = new Date(parseInt(startTimestamp));
         const elapsed = (Date.now() - startDate.getTime()) / 1000;
         if (elapsed >= limitMinutes * 60) {
-          allowClick = false;
           localStorage.removeItem('bingoStartTime');
           alert('時間切れです');
         } else {
@@ -202,6 +202,7 @@
     }
 
     function loadState() {
+      allowClick = false; // 復元直後は押せない
       const saved = localStorage.getItem('bingoCard');
       if (!saved) return;
       const card = JSON.parse(saved);
